@@ -1,4 +1,5 @@
 package prob05;
+//반복문을이용하여369게임에서박수를쳐야하는경우의수를순서대로화면에출력해보세요.(1~100)
 
 public class Sol05 {
 	public static void main(String[] args) {

@@ -1,11 +1,10 @@
 package prob01;
+//java.util.Scanner 클래스를 이용하여 입력된수가3의배수인지판별하는프로그램을작성하세요.
 
 import java.util.Scanner;
 
 public class Sol01 {
 	public static void main(String[] args) {
-		
-		/* 코드 작성 */
 		
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("수를 입력하세요: ");
