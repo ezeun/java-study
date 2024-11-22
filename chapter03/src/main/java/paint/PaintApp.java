@@ -25,6 +25,25 @@ public class PaintApp {
 		draw(new Rectangle());
 		draw(new Circle());
 		draw(new GraphicText("안녕"));
+		
+		// instanceof 연산자
+		Circle c = new Circle();
+		System.out.println(c instanceof Circle);
+		System.out.println(c instanceof Shape);
+		// 오류: 연산자 우측항이 클래스인 경우,
+		//		좌측항의 레퍼런스 타입의 hierachy(계층)의 상하위만 사용할 수 있음
+		// System.out.println(c instanceof Point);
+		
+		Shape s = new Circle();
+		System.out.println(c instanceof Object);
+		System.out.println(s instanceof Drawable);
+		System.out.println(s instanceof Circle);
+		
+		// 연산자 우측항이 인터페이스인 경우
+		// hierachy 상관없이 연산자를 사용할 수 있음
+		System.out.println(c instanceof Drawable);
+		System.out.println(c instanceof Runnable);
+		
 	}
 	
 	public static void draw(Drawable drawable) {
