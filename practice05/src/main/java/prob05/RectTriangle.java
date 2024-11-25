@@ -2,21 +2,21 @@ package prob05;
 
 public class RectTriangle extends Shape{
 
-	public RectTriangle(int width, int height) {
+	public RectTriangle(double width, double height) {
 		super(width, height);
 	}
 	
 	@Override
 	double getArea() {
-		// TODO Auto-generated method stub
-		return 0;
+		return super.getWidth()*super.getHeight()*0.5;
 	}
 
 
 	@Override
 	double getPerimeter() {
-		// TODO Auto-generated method stub
-		return 0;
+		double w = super.getWidth();
+		double h = super.getHeight();
+		return w+h+Math.sqrt(w*w+h*h);
 	}
 
 }

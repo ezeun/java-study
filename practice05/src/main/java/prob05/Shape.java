@@ -1,18 +1,27 @@
 package prob05;
 
 public abstract class Shape {
-	private int width;
-	private int height;
-	public Shape(int width, int height) {
+	private double width;
+	private double height;
+	
+	public Shape(double width, double height) {
 		this.width = width;
 		this.height = height;
 	}
+	
 	abstract double getArea();
 	abstract double getPerimeter();
-	public int getWidth() {
+	
+	public double getWidth() {
 		return width;
 	}
-	public int getHeight() {
+	public double getHeight() {
 		return height;
 	}	
+	public void setWidth(double width) {
+		this.width = width;
+	}
+	public void setHeight(double height) {
+		this.height = height;
+	}
 }

@@ -1,13 +1,15 @@
 package prob05;
 
-public class Rectangle extends Shape{
+public class Rectangle extends Shape implements Resizable {
 
-	public Rectangle(int width, int height) {
+	public Rectangle(double width, double height) {
 		super(width, height);
 	}
 
+	@Override
 	public void resize(double rate) {
-		
+		super.setWidth(super.getWidth()*rate);
+		super.setHeight(super.getHeight()*rate);
 	}
 
 	@Override
