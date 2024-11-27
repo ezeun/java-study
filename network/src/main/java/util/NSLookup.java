@@ -2,21 +2,34 @@ package util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class NSLookup {
 
 	public static void main(String[] args) {
-		try {
-			InetAddress[] InetAddresses = InetAddress.getAllByName("www.google.com");
 		
-			for(InetAddress inetAddress : InetAddresses) {
-				System.out.println(inetAddress.getHostAddress());
-			}
+		Scanner sc = new Scanner(System.in);
 		
-		} catch (UnknownHostException e) {
+		while(true) {
+			System.out.print("> ");
+			String s = sc.nextLine();
+			if(s.equals("exit")) break;
+			
+			try {
+				InetAddress[] InetAddresses = InetAddress.getAllByName(s);
+			
+				for(InetAddress inetAddress : InetAddresses) {
+					System.out.print(s+" : ");
+					System.out.println(inetAddress.getHostAddress());
+				}
+			
+			} catch (UnknownHostException e) {
 
-			e.printStackTrace();
+				e.printStackTrace();
+			}
 		}
+		
+		sc.close();
 	}
 
 }
