@@ -40,9 +40,9 @@ public class EchoRequestHandler extends Thread {
 					break;
 				}
 
-				EchoServer.log("receive: " + data);
+				EchoServer.log("received: " + data);
 
-				pw.println(data);
+				pw.println(data); 
 
 			}
 

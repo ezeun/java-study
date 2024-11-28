@@ -34,7 +34,8 @@ public class EchoClient {
 					break;
 				}
 				
-				pw.println(line);
+				pw.println(line); //자동 flush
+				
 				String data = br.readLine();
 				if(data == null) {
 					log("closed by server");
