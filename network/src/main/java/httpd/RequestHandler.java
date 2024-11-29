@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 
 public class RequestHandler extends Thread {
 	private Socket socket;
+	private final String DOCUMENT_ROOT = "./webapp";
 	
 	public RequestHandler( Socket socket ) {
 		this.socket = socket;
@@ -52,9 +54,7 @@ public class RequestHandler extends Thread {
 			} else {
 				// methods: POST, DELETE, PUT, HEAD, CONNECT, ...
 				// SimpleHttpServer에서는 무시(400 Bad Request)
-				outputStream.write( "HTTP/1.1 400 Bad Request\n".getBytes( "UTF-8" ) );
-				outputStream.write( "Content-Type:text/html; charset=utf-8\n".getBytes( "UTF-8" ) );
-				outputStream.write( "\n".getBytes() );
+				response400Error(outputStream, tokens[2]);
 			}
 			
 //			outputStream.write( "HTTP/1.1 200 OK\n".getBytes( "UTF-8" ) );
@@ -83,15 +83,11 @@ public class RequestHandler extends Thread {
 			url = "/index.html";
 		}
 		
-		File file = new File("./webapp" + url);      
+		File file = new File(DOCUMENT_ROOT + url);      
 		
 		if(!file.exists()) {
-			File file404 = new File("./webapp/error/404.html");
-			byte[] body = Files.readAllBytes(file404.toPath());
-			os.write( "HTTP/1.1 404 Not Found\n".getBytes( "UTF-8" ) );
-			os.write( "Content-Type:text/html; charset=utf-8\n".getBytes( "UTF-8" ) );
-			os.write( "\n".getBytes() );
-			os.write(body);
+			//404 응답
+			response404Error(os, protocol);
 			return;
 		}
 		
@@ -99,10 +95,42 @@ public class RequestHandler extends Thread {
 		byte[] body = Files.readAllBytes(file.toPath());
 		String contentType = Files.probeContentType(file.toPath());
 		
-		os.write( "HTTP/1.1 200 OK\n".getBytes( "UTF-8" ) );
+		os.write( (protocol+" 200 OK\n").getBytes( "UTF-8" ) );
 		os.write( ("Content-Type:"+contentType+"; charset=utf-8\n").getBytes( "UTF-8" ) );
 		os.write( "\n".getBytes() );
 		os.write(body);
+	}
+
+	private void response400Error(OutputStream outputStream, String string) {
+		try {
+			outputStream.write( "HTTP/1.1 400 Bad Request\n".getBytes( "UTF-8" ) );
+			outputStream.write( "Content-Type:text/html; charset=utf-8\n".getBytes( "UTF-8" ) );
+			outputStream.write( "\n".getBytes() );
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	private void response404Error(OutputStream os, String protocol) {
+		/* HTTP/1.1 404 File Not Found\n
+		 * Content-Type: text/html; charset=utf-8\n
+		 * \n
+		 * 
+		 */
+		File file404 = new File("./webapp/error/404.html");
+		byte[] body;
+		try {
+			body = Files.readAllBytes(file404.toPath());
+			os.write( "HTTP/1.1 404 Not Found\n".getBytes( "UTF-8" ) );
+			os.write( "Content-Type:text/html; charset=utf-8\n".getBytes( "UTF-8" ) );
+			os.write( "\n".getBytes() );
+			os.write(body);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void consoleLog( String message ) {
