@@ -24,7 +24,7 @@ public class ChatClient {
 	        br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	        pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 	  
-	        System.out.println("닉네임>>");
+	        System.out.print("닉네임>>");
 	        String nickname = sc.nextLine();
 	        pw.println("join:" + nickname);
 	        pw.flush();
@@ -33,26 +33,26 @@ public class ChatClient {
 	        new ChatClientThread(br).start();
 	        
 	        while(true) {
-	        	System.out.println(">>");
 	        	String input = sc.nextLine();
 	        	
 	        	if("quit".equals(input)) {
 	                pw.println("quit:");
 	                pw.flush();
+	                break;
 	        	}else {
 	                pw.println("message:" + input);
 	                pw.flush();
 	        	}
 	        }
         
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("error:"+e);
 		} finally {
 			try {
-//				br.close();
-//				pw.close();
-				socket.close();
-				sc.close();
+				if(sc != null)
+					sc.close();
+				if(socket!=null && !socket.isClosed())
+					socket.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

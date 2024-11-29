@@ -44,6 +44,7 @@ public class ChatServerThread extends Thread {
 				}
 				else if("quit".equals(tokens[0])) {
 					doQuit(pw);
+					break;
 				}
 				else {
 					System.out.println("에러: 알 수 없는 요청("+tokens[0]+")");
@@ -62,10 +63,6 @@ public class ChatServerThread extends Thread {
 	   broadcast( data );
 			
 	   addWriter( writer );
-
-	   pw.println( "join:ok" );
-	   pw.flush();
-
 	}
 	private void addWriter( Writer writer ) {
 	   synchronized( listWriters ) {
