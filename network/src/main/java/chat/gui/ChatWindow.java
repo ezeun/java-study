@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -45,6 +46,15 @@ public class ChatWindow {
 
 		// Textfield
 		textField.setColumns(80);
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				char keyChar = e.getKeyChar();
+				if(keyChar == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}			
+		});
 
 		// Pannel
 		pannel.setBackground(Color.LIGHT_GRAY);
@@ -59,7 +69,7 @@ public class ChatWindow {
 		// Frame
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+				finish();
 			}
 		});
 		frame.setVisible(true);
@@ -75,5 +85,35 @@ public class ChatWindow {
 	private void sendMessage() {
 		String message = textField.getText();
 		System.out.println("메세지를 보내는 프로토콜 구현!:"+message);
+		
+		textField.setText("");
+		textField.requestFocus();
+		
+		//소켓으로 받은 후 updateTextArea
+		//ChatClientThread에서 서버로 부터 받은 메세지가 있다고 치고
+		updateTextArea("홍길동: "+message);
 	}
+	
+	private void updateTextArea(String message) {
+		textArea.append(message);
+		textArea.append("\n");
+	}
+	
+	private void finish() {
+		// quit 프로토콜 구현 (pw보내고 br받아)
+		
+		// exit java application 
+		System.exit(0); // x 클릭하면 창 닫힘
+	}
+	
+	//Thread를 inner class로 만들어야 private updateTextArea()에 접근 가능
+	private class ChatClientThread extends Thread {
+
+		@Override
+		public void run() {
+			updateTextArea("...");
+		}
+		
+	}
+	
 }
