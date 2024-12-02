@@ -10,9 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
+import chat.ChatServer;
 
 public class ChatWindow {
 
@@ -22,7 +30,14 @@ public class ChatWindow {
 	private TextField textField;
 	private TextArea textArea;
 
+	private Socket socket = null;
+	private BufferedReader br = null;
+	private PrintWriter pw = null;
+	
+	private String nickname="";
+	
 	public ChatWindow(String name) {
+		this.nickname = name;
 		frame = new Frame(name); //윈도우창 
 		pannel = new Panel(); //아래쪽에 TextField를 포함하는 곳
 		buttonSend = new Button("Send"); //전송 버튼
@@ -31,6 +46,9 @@ public class ChatWindow {
 	}
 
 	public void show() {
+		
+		connectServer();
+		
 		// Button
 		buttonSend.setBackground(Color.GRAY);
 		buttonSend.setForeground(Color.WHITE);
@@ -40,9 +58,6 @@ public class ChatWindow {
 				sendMessage();
 			}
 		});
-//		buttonSend.addActionListener( //함수를 파라미터로 넘길 수 없음
-//				(ActionEvent actionEvent) -> {}
-//		);
 
 		// Textfield
 		textField.setColumns(80);
@@ -75,23 +90,39 @@ public class ChatWindow {
 		frame.setVisible(true);
 		frame.pack();
 		
-		// 1. 서버 연결 작업
-		// 2. IO Stream Set 
-		// 3. join 프로토콜
-		// 4. ChatClientThread 생성
-		
+	}
+	
+	private void connectServer() {
+		try {
+			// 1. 서버 연결 작업
+			socket = new Socket();
+			socket.connect(new InetSocketAddress("127.0.0.1", ChatServer.PORT));
+	
+			// 2. IO Stream Set 
+	        br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	        pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+	  
+			// 3. join 프로토콜
+	        pw.println("join:" + nickname);
+//	        pw.flush();
+	        
+			// 4. ChatClientThread 생성
+	        new ChatClientThread(br).start();
+	        
+		}catch (IOException e) {
+			System.out.println("error:"+e);
+		} 
 	}
 	
 	private void sendMessage() {
 		String message = textField.getText();
-		System.out.println("메세지를 보내는 프로토콜 구현!:"+message);
+        pw.println("message:" + message);
+//        pw.flush();
 		
+//        updateTextArea(nickname + ">>" + message);
+        
 		textField.setText("");
 		textField.requestFocus();
-		
-		//소켓으로 받은 후 updateTextArea
-		//ChatClientThread에서 서버로 부터 받은 메세지가 있다고 치고
-		updateTextArea("홍길동: "+message);
 	}
 	
 	private void updateTextArea(String message) {
@@ -100,8 +131,17 @@ public class ChatWindow {
 	}
 	
 	private void finish() {
-		// quit 프로토콜 구현 (pw보내고 br받아)
-		
+		try {
+			// quit 프로토콜 구현 
+	        pw.println("quit:");
+//	        pw.flush();
+	        if (socket != null && !socket.isClosed()) {
+	            socket.close();
+	        }
+		}catch (IOException e) {
+            System.out.println("종료 중 오류 발생: " + e.getMessage());
+        }
+	        
 		// exit java application 
 		System.exit(0); // x 클릭하면 창 닫힘
 	}
@@ -109,9 +149,27 @@ public class ChatWindow {
 	//Thread를 inner class로 만들어야 private updateTextArea()에 접근 가능
 	private class ChatClientThread extends Thread {
 
+		BufferedReader br = null;
+		
+		public ChatClientThread(BufferedReader br) {
+			this.br = br;
+		}
+		
 		@Override
 		public void run() {
-			updateTextArea("...");
+			String line = null;
+			try {
+				while((line = br.readLine())!=null) {
+					updateTextArea(line);
+					System.out.println(line);
+				}
+				if(line == null) {
+					System.out.println("closed by server");
+					finish();
+				}
+			} catch (IOException e) {
+				System.out.println("error!!! " + e);
+			} 
 		}
 		
 	}

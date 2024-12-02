@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ChatServer {
 
-	public static final int PORT = 50000;
+	public static final int PORT = 50005;
 	
 	public static void main(String[] args) throws Exception {
 		ServerSocket serverSocket= null;
