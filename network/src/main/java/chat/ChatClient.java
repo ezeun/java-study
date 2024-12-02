@@ -54,7 +54,7 @@ public class ChatClient {
 				if(socket!=null && !socket.isClosed())
 					socket.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("error " + e);
 			}
 		}
 	}
