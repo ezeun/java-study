@@ -18,6 +18,9 @@ public class TCPServer {
 			// 1. 서버 소켓 생성
 			serverSocket = new ServerSocket();
 			
+			// 1-1. FIN_WAIT -> TIME_WAIT 상태에서도 소켓의 포트 할당이 가능하도록 하는 옵션 
+			serverSocket.setReuseAddress(true);
+			
 			// 2. 바인딩(binding)
 			//    Socket에 InetSocketAddress[InetAddress(IPAddress) + port]를 바인딩 함
 			//    IPAddress: 0.0.0.0: 특정 호스트 IP를 바인딩하지 않음 
@@ -52,6 +55,12 @@ public class TCPServer {
 					System.out.println("[server] receive:" + data);
 					
 					// 6. 데이터 쓰기 (client에게 전달)
+					// SO_TIMEOUT Test
+//					try {
+//						Thread.sleep(3000);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
 					os.write(data.getBytes("utf-8"));
 				}
 			} catch(SocketException e) {
